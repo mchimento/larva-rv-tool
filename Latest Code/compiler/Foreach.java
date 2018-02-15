@@ -3,16 +3,13 @@ package compiler;
 import java.util.ArrayList;
 
 public class Foreach extends Global{
-
-
 	
 	public Foreach(Global parent, ParsingString string) throws ParseException
 	{
-		super(string);
+		super(string);		
 		this.parent = parent;
 		headerParse();
 		parse();
-		
 	}
 	
 	public void headerParse()throws ParseException

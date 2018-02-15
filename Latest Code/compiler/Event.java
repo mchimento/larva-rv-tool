@@ -642,14 +642,14 @@ public class Event extends Trigger{
 					" && (if (_c.name.equals(\""+this.clockName+"\")))"+
 					" && (if (millis == "+clockAmount+"))"+
 					" && !cflow(adviceexecution())"+
-					" && !cflow(within(larva.*))  && !(within(larva.*))");
+					" && !cflow(within(larva.*))  && !(within(larva.*))"); //StaRVOOrS may need only && !(within(larva.*))");
 		}
 		else if (type == EventType.clockCycle)
 		{
 			sb.append("Clock _c, long millis) : (call(* Clock.event(long))" +
 					" && args(millis) && target(_c) && (if (millis % "+clockAmount+"==0))"+
 					" && !cflow(adviceexecution())"+
-					" && !cflow(within(larva.*))  && !(within(larva.*))");
+					" && !cflow(within(larva.*))  && !(within(larva.*))"); //StaRVOOrS may need only && !(within(larva.*))");
 		}
 		else if (type == EventType.channel)
 		{
@@ -720,13 +720,23 @@ public class Event extends Trigger{
 			
 			if (!methodName.text.equals("new"))//handles constructor call 
 				sb.append("* ");
-			
-			
+		
+			// StaRVOOrS 
+/* 
 			if (target != null && variables.containsKey(target.text) && variables.get(target.text).type != null)
 				sb.append(variables.get(target.text).type.text);
+			else if (target != null && variables.containsKey(target.text + "+") && variables.get(target.text + "+").type != null)
+				sb.append(variables.get(target.text).type.text);
+			else if (target != null && variables.containsKey(target.text + "+") && variables.get(target.text + "+").type == null)
+				sb.append(target.text + "+");
 			else
 				sb.append("*");
-			
+*/
+
+                        if (target != null && variables.containsKey(target.text) && variables.get(target.text).type != null)
+				sb.append(variables.get(target.text).type.text);
+			else
+				sb.append("*");			
 			if (variables.containsKey(target.text) && variables.get(target.text).subclasses)
 				sb.append("+");
 
@@ -735,6 +745,7 @@ public class Event extends Trigger{
 			//suppressed target matching in case of constructor (one should use uponReturning not target)
 			if (target != null && !methodName.text.equals("new") && variables.containsKey(target.text) && variables.get(target.text).type != null)
 				sb.append(" && target(" + target.text+")");
+			else {}
 
 			if (args.size()>0)
 			{
@@ -755,7 +766,7 @@ public class Event extends Trigger{
 			if (type == EventType.uponHandling)
 				sb.append(")");//closing cflow
 
-			sb.append(" && !cflow(adviceexecution()) && !cflow(within(larva.*))  && !(within(larva.*))");
+			sb.append(" && !cflow(adviceexecution()) && !(within(larva.*))");
 		}
 		
 		//forming collection
@@ -777,18 +788,34 @@ public class Event extends Trigger{
 		}
 		sb.append(") {");
 		
+		//starvoors
+		for (Variable v:variables.values())
+		{
+			if (v.name.toString().equals("msgPPD")) {;
+				sb.append("\n\r\n if (_c.name != null) starvoors = true;");
+				break;
+			}
+		}
+		
+		ArrayList<Variable> allParentVariables = g.allParentsVars(new ArrayList<Variable>());
+		
+		if (type == EventType.uponReturning) {
+		   for (Variable v : allParentVariables) {
+			   if (v.type.toString().equals("Integer") && v.name.toString().contains("idPPD")) {
+				   sb.append("\n\r\n"+"if (!starvoors) return;");
+				   break;
+			   }
+		   }
+		}
 		sb.append("\r\n\r\nsynchronized(_asp_"+Global.name+"0.lock){");
 		
 		//method body
 		
-		
-			ArrayList<Variable> allParentVariables = g.allParentsVars(new ArrayList<Variable>());
 			//the context variables
 			for (Variable v : allParentVariables)
 				sb.append("\r\n"+v.type+" "+v.name+";");
 
 			HashMap<String, Variable> allOtherVars = recursiveOtherVariables(events,this,new HashMap<String, Variable>());
-
 			
 			//the other variables
 			for (Variable v : allOtherVars.values())
