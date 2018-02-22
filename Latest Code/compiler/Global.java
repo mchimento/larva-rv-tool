@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.IOException;
 
 
 public class Global extends Compiler{
@@ -797,19 +800,22 @@ public class Global extends Compiler{
 		
 	public void createClass(String name)
 	{
-		try{			
-			URL url = this.getClass().getResource("/resources/"+ name+".txt");
-			String decoded = URLDecoder.decode(url.getPath(), "UTF-8");
+		try{		
+                        //starvoors {	
+			//URL url = this.getClass().getResource("/resources/"+ name+".txt");                        
+			//String decoded = URLDecoder.decode(url.getPath(), "UTF-8");
 			
-			Path source = Paths.get(decoded);
-			Path destination = Paths.get(Compiler.outputDir+"/larva/"+name+".java");
+			//Path source = Paths.get(decoded);                        
+                        InputStream source = getClass().getResourceAsStream("/resources/"+ name+".txt");
+			//}
+                        Path destination = Paths.get(Compiler.outputDir+"/larva/"+name+".java");
 
 			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public void createSC()
 	{
 		try{
