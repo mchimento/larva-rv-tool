@@ -60,12 +60,15 @@ public class Transition {
 			}
 
 			sb.append("\r\n		_goto_"+l.name+"(_info);");
-			if (Compiler.light && a.destination.type.equals(State.Type.BAD))
+			if (Compiler.light && a.destination.type.equals(State.Type.BAD)) {
 				sb.append("\r\n          Runtime.getRuntime().halt(0);//in the light version the system is terminated upon a violation");
-			else if (a.destination.type.equals(State.Type.ACCEPTING))
+			} else if (a.destination.type.equals(State.Type.ACCEPTING))
 			{
 				sb.append("\r\n           _killThis(); //discard this automaton since an accepting state has been reached");
 			}
+                        //starvoors
+			if (Compiler.killbad && a.destination.type.equals(State.Type.BAD)) {
+			    sb.append("\r\n          _killThis(); //discard this automaton since a bad state has been reached");}
 			sb.append("\r\n		}");
 		}
 	} 

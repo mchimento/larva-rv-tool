@@ -21,7 +21,10 @@ public class Compiler {
 	static boolean verbose = false;  //-v (adds more verbose output)
 	static boolean console = false;  //-c (leave output to system.out)
 	static boolean light = false;    //-l (for competition)
-	
+        //starvoors
+        static boolean distributed = false; //-d (for improving output generation in presence of active objects)
+        static boolean killbad     = false; //-k (kill automaton when reaching a bad state)	
+
 	public Compiler(){}
 	
 	public Compiler(ParsingString sb)
@@ -96,6 +99,13 @@ public class Compiler {
 					
 					if (args[i].equals("-l"))
 						light = true;
+
+                                        //starvoors
+                                        if (args[i].equals("-d"))
+                                                distributed = true;
+
+                                        if (args[i].equals("-k"))
+                                                killbad = true;
 				}
 				
 				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputDir)));

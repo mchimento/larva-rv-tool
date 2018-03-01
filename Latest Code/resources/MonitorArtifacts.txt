@@ -1,0 +1,23 @@
+package larva;
+
+import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class MonitorArtifacts {
+
+	public final static UUID id = UUID.randomUUID();	
+	
+	public static String timestamp = new SimpleDateFormat("HH:mm:ss---dd.MM.yyyy").format(new Date());
+	
+	public static String outputAdd ;
+	
+	public static void setOutputAdd(String out){
+		String[] aux = new StringBuilder(out).reverse().toString().split("txt."); 
+					
+		outputAdd = new StringBuilder(aux[1]).reverse().toString() 
+				    + "_" + id.toString() + ".txt";
+	}	
+	
+}
+

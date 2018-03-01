@@ -438,9 +438,16 @@ public class Global extends Compiler{
 			cl.append("\r\nstatic{\r\ntry{");
 
 			if (!Compiler.console)//just output to console instead of file
-				cl.append("\r\npw = new PrintWriter(\""+Compiler.outputDir.replace("\\", "\\\\")
-					+"/output_"+name+".txt\");\r\n");
-
+                                //starvoors{
+				if (Compiler.distributed) {
+				    cl.append("MonitorArtifacts.setOutputAdd(\""+Compiler.outputDir.replace("\\", "\\\\")
+					    +"/output_"+name+".txt\");\r\n");
+				    cl.append("\r\npw = new PrintWriter(MonitorArtifacts.outputAdd);\r\n");
+				} else {
+				    cl.append("\r\npw = new PrintWriter(\""+Compiler.outputDir.replace("\\", "\\\\")
+					    +"/output_"+name+".txt\");\r\n");
+				}
+                                //}
 			cl.append("\r\nroot = new _cls_" + this.name + this.id + "();" +
 					"\r\n_cls_" + this.name + this.id + "_instances.put(root, root);");
 
@@ -543,6 +550,12 @@ public class Global extends Compiler{
 		///////////////////////// initialisation
 		
 		cl.append("\r\n\r\npublic void initialisation() {");
+
+		//starvoors
+		if (Compiler.distributed && parent == null) {
+		    cl.append("\r\nSystem.out.println(\"The id for the monitor is \" + MonitorArtifacts.id.toString() + \".\");\r\n");
+		    cl.append("\r\nSystem.out.println(\"The id was created at \" + MonitorArtifacts.timestamp.toString() + \".\");\r\n");
+		}
 		
 		for (Property p : logics.values())
 		{
@@ -794,6 +807,8 @@ public class Global extends Compiler{
 		createClass("IterableList");
 		createClass("RunningClock");
 		createSC();
+                if (Compiler.distributed)
+                    createClass("MonitorArtifacts");
 	}
 		
 	public void createClass(String name)
