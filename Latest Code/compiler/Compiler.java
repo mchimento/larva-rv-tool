@@ -23,6 +23,7 @@ public class Compiler {
 	static boolean light = false;    //-l (for competition)
         //starvoors
         static boolean distributed = false; //-d (for improving output generation in presence of active objects)
+        static boolean killbad = false; //-k (for killing automaton if bad states are reached)
 
 	public Compiler(){}
 	
@@ -102,6 +103,8 @@ public class Compiler {
                                         //starvoors
                                         if (args[i].equals("-d"))
                                                 distributed = true;
+                                        if (args[i].equals("-k"))
+                                                killbad = true;
 				}
 				
 				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputDir)));

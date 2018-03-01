@@ -20,6 +20,9 @@ import java.io.IOException;
 
 public class Global extends Compiler{
 	
+        //starvoors
+        public static boolean PPDforeach = false;
+
 	public static int sid = -1;
 	
 	public int id;
@@ -229,8 +232,8 @@ public class Global extends Compiler{
 			return s+t.text;
 		}
 		else 
-		{       //starvoors
-			if (!g.equals(root) && serachVariableInOneContext(root,t))//this search does not include context variables...these can never be ambiguous!!
+		{       //starvoors -- conjunction added to remove warnings in replicated automata for Hoare triples.
+			if (!g.equals(root) && serachVariableInOneContext(root,t) && PPDforeach)//this search does not include context variables...these can never be ambiguous!!
 				System.out.println("Warning: ambigious reference to variable: \""+ t + "\" (matching the innermost context...use \":"+t+"\" to refer to the variable in global)");
 			return t.text;
 		}
@@ -438,12 +441,12 @@ public class Global extends Compiler{
 			if (!Compiler.console)//just output to console instead of file
                                 //starvoors{
 				if (Compiler.distributed) {
-				    cl.append("MonitorArtifacts.setOutputAdd(\""+Compiler.outputDir.replace("\\", "\\\\")
-					    +"/output_"+name+".txt\");\r\n");
+				    cl.append("\r\n\nMonitorArtifacts.setOutputAdd(\""+Compiler.outputDir.replace("\\", "\\\\")
+					    +"output_"+name+".txt\");\r\n");
 				    cl.append("\r\npw = new PrintWriter(MonitorArtifacts.outputAdd);\r\n");
 				} else {
 				    cl.append("\r\npw = new PrintWriter(\""+Compiler.outputDir.replace("\\", "\\\\")
-					    +"/output_"+name+".txt\");\r\n");
+					    +"output_"+name+".txt\");\r\n");
 				}
                                 //}
 			cl.append("\r\nroot = new _cls_" + this.name + this.id + "();" +

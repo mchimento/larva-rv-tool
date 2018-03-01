@@ -66,6 +66,9 @@ public class Transition {
 			{
 				sb.append("\r\n           _killThis(); //discard this automaton since an accepting state has been reached");
 			}
+                        //starvoors 
+                        if (Compiler.killbad && a.destination.type.equals(State.Type.BAD)) {
+			    sb.append("\r\n          _killThis(); //discard this automaton since a bad state has been reached");}
 			sb.append("\r\n		}");
 		}
 	} 
