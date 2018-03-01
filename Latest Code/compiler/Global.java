@@ -19,8 +19,6 @@ import java.io.IOException;
 
 
 public class Global extends Compiler{
-
-	public static boolean PPDforeach = false;
 	
 	public static int sid = -1;
 	
@@ -232,7 +230,7 @@ public class Global extends Compiler{
 		}
 		else 
 		{       //starvoors
-			if (!g.equals(root) && serachVariableInOneContext(root,t) && PPDforeach)//this search does not include context variables...these can never be ambiguous!!
+			if (!g.equals(root) && serachVariableInOneContext(root,t))//this search does not include context variables...these can never be ambiguous!!
 				System.out.println("Warning: ambigious reference to variable: \""+ t + "\" (matching the innermost context...use \":"+t+"\" to refer to the variable in global)");
 			return t.text;
 		}
