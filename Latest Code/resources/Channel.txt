@@ -2,8 +2,17 @@ package larva;
 public class Channel{
 	static boolean on = true;
 
+//starvoors
+public String name = null;
+
 public Channel()
 {
+}
+
+//starvoors
+public Channel(String s)
+{ 
+   name = s ;
 }
 
 public void receive(String s){}

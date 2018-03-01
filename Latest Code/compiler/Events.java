@@ -44,6 +44,9 @@ public class Events extends Compiler{
 				((Event)t).traverseForTypes(events, g);
 		}
 		
+		//starvoors
+		sb.append("\r\n\r\nboolean starvoors = false;");
+		
 		sb.append("\r\n\r\nboolean initialized = false;" +
 				"\r\n\r\nafter():(staticinitialization(*)){" +
 				"\r\nif (!initialized){"+

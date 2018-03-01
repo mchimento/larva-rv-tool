@@ -12,31 +12,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.IOException;
 
 
 public class Global extends Compiler{
 
+	public static boolean PPDforeach = false;
+	
 	public static int sid = -1;
 	
 	public int id;
 	
 	public static String name;
 	
-	Events events;
+	public Events events;
 	
-	LinkedHashMap<Variable, ArrayList<Token>> local = new LinkedHashMap<Variable, ArrayList<Token>>(); 
-	LinkedHashMap<String, Variable> localVariables = new LinkedHashMap<String, Variable>();
+	public LinkedHashMap<Variable, ArrayList<Token>> local = new LinkedHashMap<Variable, ArrayList<Token>>(); 
+	public LinkedHashMap<String, Variable> localVariables = new LinkedHashMap<String, Variable>();
 	
-	HashMap<String, Variable> contextVariables = new HashMap<String, Variable>();
-	ArrayList<Variable> variables = new ArrayList<Variable>();//these are the variables for the FOREACH	
+	public HashMap<String, Variable> contextVariables = new HashMap<String, Variable>();
+	public ArrayList<Variable> variables = new ArrayList<Variable>();//these are the variables for the FOREACH	
 	ArrayList<String> equateMethods = new ArrayList<String>();//these are the equate methods for the FOREACH
 	ArrayList<String> stringMethods = new ArrayList<String>();//these are the equate methods for the FOREACH
-	ArrayList<Token> context = new ArrayList<Token>();
+	public ArrayList<Token> context = new ArrayList<Token>();
 	
-	LinkedHashMap<String, Property> logics = new LinkedHashMap<String, Property>(); 
+	public LinkedHashMap<String, Property> logics = new LinkedHashMap<String, Property>(); 
 	
-	ArrayList<Foreach> foreaches = new ArrayList<Foreach>();	
+	public ArrayList<Foreach> foreaches = new ArrayList<Foreach>();	
 	
 	public Invariants invariants;
 	
@@ -226,8 +231,8 @@ public class Global extends Compiler{
 			return s+t.text;
 		}
 		else 
-		{
-			if (!g.equals(root) && serachVariableInOneContext(root,t))//this search does not include context variables...these can never be ambiguous!!
+		{       //starvoors
+			if (!g.equals(root) && serachVariableInOneContext(root,t) && PPDforeach)//this search does not include context variables...these can never be ambiguous!!
 				System.out.println("Warning: ambigious reference to variable: \""+ t + "\" (matching the innermost context...use \":"+t+"\" to refer to the variable in global)");
 			return t.text;
 		}
@@ -409,11 +414,16 @@ public class Global extends Compiler{
 			cl.append("\r\n\r\npublic static PrintWriter pw; " +
 					"\r\npublic static _cls_" + this.name + this.id + " root;");
 		}
-		
+
 		for (Variable v:localVariables.values())
 			if (v.getVariableType().equals("Channel"))
 			{
-				cl.append("\r\npublic static " + v.getVariableType()+ " " + v.getVariableName()+" = new Channel();");
+				//starvoors
+				if (v.getVariableName().toString().contains("hppd") || v.getVariableName().toString().contains("cact"))
+     				cl.append("\r\npublic static " + v.getVariableType()+ " " + v.getVariableName()+" = new Channel(\"" + v.getVariableName() +"\");"); 
+				else {
+					cl.append("\r\npublic static " + v.getVariableType()+ " " + v.getVariableName()+" = new Channel();"); 
+				}
 			}
 		
 		cl.append("\r\n\r\npublic static LinkedHashMap<_cls_"+name+id+",_cls_"+name+id+"> _cls_"+name+id
@@ -462,9 +472,8 @@ public class Global extends Compiler{
 		
 		
 		//these are the variables which constitute the context E.G. transaction
-		for (Variable v: variables)
-			cl.append("\r\npublic " + v.type + " " + v.name+ ";");
-		
+		for (Variable v: variables) 
+			cl.append("\r\npublic " + v.type + " " + v.name+ ";"); 
 		
 		cl.append("\r\nint no_automata = "+logics.size()+";");
 		
@@ -789,19 +798,22 @@ public class Global extends Compiler{
 		
 	public void createClass(String name)
 	{
-		try{			
-			URL url = this.getClass().getResource("/resources/"+ name+".txt");
-			String decoded = URLDecoder.decode(url.getPath(), "UTF-8");
+		try{		
+                        //starvoors {	
+			//URL url = this.getClass().getResource("/resources/"+ name+".txt");                        
+			//String decoded = URLDecoder.decode(url.getPath(), "UTF-8");
 			
-			Path source = Paths.get(decoded);
-			Path destination = Paths.get(Compiler.outputDir+"/larva/"+name+".java");
+			//Path source = Paths.get(decoded);                        
+                        InputStream source = getClass().getResourceAsStream("/resources/"+ name+".txt");
+			//}
+                        Path destination = Paths.get(Compiler.outputDir+"/larva/"+name+".java");
 
 			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public void createSC()
 	{
 		try{
