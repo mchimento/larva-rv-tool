@@ -554,8 +554,8 @@ public class Global extends Compiler{
 
 		//starvoors
 		if (Compiler.distributed && parent == null) {
-		    cl.append("\r\nSystem.out.println(\"The id for the monitor is \" + MonitorArtifacts.id.toString() + \".\");\r\n");
-		    cl.append("\r\nSystem.out.println(\"The id was created at \" + MonitorArtifacts.timestamp.toString() + \".\");\r\n");
+		    cl.append("\r\nSystem.out.println(\"The id for the monitor is \" + MonitorArtifacts.id.toString() + \".\");\r");
+		    cl.append("\r\nSystem.out.println(\"The id was created at \" + MonitorArtifacts.timestamp.toString() + \".\\n\");\r\n");
 		}
 		
 		for (Property p : logics.values())
