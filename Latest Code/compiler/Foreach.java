@@ -71,7 +71,10 @@ public class Foreach extends Global{
 				var.name = tokens.get(++tokenPosition);
 			}
 
-			
+			//starvoors
+			if (var.name.text.equals("idPPD"))
+			    Global.PPDforeach = false;
+
 			if (tokenPosition+1 < tokens.size() && tokens.get(tokenPosition+1).is("equateUsing"))
 			{
 				tokenPosition++;
