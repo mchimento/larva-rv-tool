@@ -804,9 +804,15 @@ public class Event extends Trigger{
 		//starvoors
 		for (Variable v:variables.values())
 		{
-			if (v.name.toString().equals("msgPPD")) {;
+			if (v.name.toString().equals("msgPPD") ||
+			   (v.name.toString().equals("obj") && v.type.toString().contains("Tmp_"))) {;
 				sb.append("\n\r\n if (_c.name != null) starvoors = true;");
 				break;
+			}
+			
+			if (v.name.toString().contains("_tmpPPD")) {
+				sb.append("\n\r\n"+"if (!starvoors) return;");
+			    break;
 			}
 		}
 		

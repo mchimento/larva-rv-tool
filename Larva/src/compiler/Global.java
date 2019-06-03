@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class Global extends Compiler{
 	
-        //starvoors
-        public static boolean PPDforeach = true;
+    //starvoors
+    public static boolean PPDforeach = true;
 
 	public static int sid = -1;
 	
