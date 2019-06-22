@@ -806,12 +806,14 @@ public class Event extends Trigger{
 		{
 			if (v.name.toString().equals("msgPPD") ||
 			   (v.name.toString().equals("obj") && v.type.toString().contains("Tmp_"))) {;
-				sb.append("\n\r\n if (_c.name != null) starvoors = true;");
+				sb.append("\n\r\n if (_c.name != null) starvoors = true;\n");
+				sb.append("\n\r\n"+"if (_c.flare) {");
+				sb.append("\n\r\n"+"   starvoors = false; _c.flare = false; return;}");
 				break;
 			}
 			
 			if (v.name.toString().contains("_tmpPPD")) {
-				sb.append("\n\r\n"+"if (!starvoors) return;");
+				sb.append("\n\r\n"+"if (!starvoors) return;");				
 			    break;
 			}
 		}
