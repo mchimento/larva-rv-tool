@@ -45,7 +45,8 @@ public class Events extends Compiler{
 		}
 		
 		//starvoors
-		sb.append("\r\n\r\nboolean starvoors = false;");
+		sb.append("\r\n\r\nint starvoors = 0;");
+		//
 		
 		sb.append("\r\n\r\nboolean initialized = false;" +
 				"\r\n\r\nafter():(staticinitialization(*)){" +

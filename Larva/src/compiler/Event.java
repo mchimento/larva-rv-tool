@@ -804,16 +804,22 @@ public class Event extends Trigger{
 		//starvoors
 		for (Variable v:variables.values())
 		{
-			if (v.name.toString().equals("msgPPD") ||
-			   (v.name.toString().equals("obj") && v.type.toString().contains("Tmp_"))) {;
-				sb.append("\n\r\n if (_c.name != null) starvoors = true;\n");
-				sb.append("\n\r\n"+"if (_c.flare) {");
-				sb.append("\n\r\n"+"   starvoors = false; _c.flare = false; return;}");
+			if (v.name.toString().equals("obj") && v.type.toString().contains("Tmp_")) {;
+				sb.append("\n\r\nif (_c.name != null && obj.getObject() != null) starvoors++;\n");
+				sb.append("\n\r\nif (_c.flare && obj.getObject() == null) {");
+				sb.append("\n\r\n   starvoors--; _c.flare = false; return; }");
+				break;
+			}
+			
+			if (v.name.toString().equals("msgPPD")) {;
+				sb.append("\n\r\nif (_c.name != null) starvoors++;\n");
+				sb.append("\n\r\nif (_c.flare) {");
+				sb.append("\n\r\n   starvoors--; _c.flare = false; return; }");
 				break;
 			}
 			
 			if (v.name.toString().contains("_tmpPPD")) {
-				sb.append("\n\r\n"+"if (!starvoors) return;");				
+				sb.append("\n\r\nif (starvoors == 0) return;");				
 			    break;
 			}
 		}
@@ -823,7 +829,7 @@ public class Event extends Trigger{
 		if (type == EventType.uponReturning) {
 		   for (Variable v : allParentVariables) {
 			   if (v.type.toString().equals("Integer") && v.name.toString().contains("idPPD")) {
-				   sb.append("\n\r\n"+"if (!starvoors) return;");
+				   sb.append("\n\r\n"+"if (starvoors == 0) return;");
 				   break;
 			   }
 		   }
