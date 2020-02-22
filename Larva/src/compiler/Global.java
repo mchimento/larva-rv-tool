@@ -281,6 +281,7 @@ public class Global extends Compiler{
 			//dissect into pieces
 			int cnt= 0;
 			ArrayList<ArrayList<Token>> strings = new ArrayList<ArrayList<Token>>();
+
 			while (cnt < tokens.size())
 			{
 				ArrayList<Token> string = new ArrayList<Token>();
@@ -290,13 +291,13 @@ public class Global extends Compiler{
 				//in this case we need to consume another token
 				if (string.get(0).is("::"))
 					string.add(tokens.get(cnt++));
-				
+
 				boolean start = true;
 				while (cnt<tokens.size() && ((!tokens.get(cnt).isIdentifier() && tokens.get(cnt).isNot("::"))
 						|| start))//group "strings"
 				{
-					
-					string.add(tokens.get(cnt));
+					if (tokens.get(cnt).isNot(":")) //starvoors
+					   string.add(tokens.get(cnt));
 					//start remains true will consuming the sequence representing the context
 					if (start && tokens.get(cnt).isNot("::") && tokens.get(cnt).isNot(",")
 							&& !tokens.get(cnt).isIdentifier())
@@ -333,8 +334,10 @@ public class Global extends Compiler{
 						context = Tokenizer.ending(cnt2, "::", al);
 						cnt2 += context.size()+1;
 						current = current.searchContext(context);
-						if (current == null) 
+						if (current == null) {
+							System.out.printf(al.toString() + "\n\n");
 							throw new ParseException("Invalid Context : " + al);
+						}
 					}
 					
 					//the context exists! but check that the variable exists in that context!!
@@ -570,8 +573,6 @@ public class Global extends Compiler{
 				cl.append("\r\n   " + v.getVariableName() + ".reset();");
 		
 		cl.append("\r\n}");
-
-		
 		
 		///////////////////////////////////////////////////////////////////////////
 		//call to constructor
@@ -726,10 +727,7 @@ public class Global extends Compiler{
 								"}" +
 				"\r\nfor (_cls_" + this.name + this.id + " _inst : a)");
 		cl.append("\r\n\r\nif (_inst != null) _inst._call(_info, _event);");
-		
 		cl.append("\r\n}");
-		
-		
 		
 		//_killThis
 		cl.append("\r\n\r\npublic void _killThis(){");
@@ -754,17 +752,12 @@ public class Global extends Compiler{
 				"\r\n{throw new Exception(\"no_automata < 0!!\");}" +
 				"\r\n}catch(Exception ex){ex.printStackTrace();}" +
 				"\r\n}");
-		
-		
+			
 		//automaton methods
 		
 		cl.append("\r\n");
 		for (Property l:logics.values())
 			l.appendJava(cl, this,root);
-		
-		
-		
-		
 		
 		//_occurredEvent method
 		
@@ -815,16 +808,10 @@ public class Global extends Compiler{
 	public void createClass(String name)
 	{
 		try{		
-                        //starvoors {	
-			//URL url = this.getClass().getResource("/resources/"+ name+".txt");                        
-			//String decoded = URLDecoder.decode(url.getPath(), "UTF-8");
-			
-			//Path source = Paths.get(decoded);                        
-                        InputStream source = getClass().getResourceAsStream("/resources/"+ name+".txt");
-			//}
-                        Path destination = Paths.get(Compiler.outputDir+"/larva/"+name+".java");
+             InputStream source = getClass().getResourceAsStream("/resources/"+ name+".txt");			
+             Path destination = Paths.get(Compiler.outputDir+"/larva/"+name+".java");
 
-			Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+			 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
